@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta name="author" content="Christine Macé et François Emeric Verstraete">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mission Europe – pays et capitales</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,6 +56,18 @@ button:focus-visible{outline:3px solid #FFD23F;outline-offset:3px}
 .choice[aria-pressed="true"]{border-color:#FF8A5B;background:rgba(255,138,91,.14)}
 .go{background:#FFD23F;color:#1D2350;font-size:28px;font-weight:800;padding:12px 44px;border-radius:999px;box-shadow:0 6px 0 #C99A00;margin-top:4px}
 .go:active{transform:translateY(4px);box-shadow:0 2px 0 #C99A00}
+.linkbtn{background:transparent;color:var(--text-on-bg);text-decoration:underline;font-size:17px;margin-top:10px;padding:6px 12px}
+#credits{align-items:flex-start;justify-content:center;background:rgba(20,26,61,.8);padding:16px;overflow:auto}
+.card.credits{text-align:left;width:min(560px,100%);margin:auto 0}
+.credits h2{text-align:center;margin:0 0 4px}
+.card.credits h3{font-size:19px;margin:18px 0 4px}
+.card.credits p,.card.credits li{text-align:left;font-size:16px;line-height:1.45;color:var(--ink);margin:4px 0}
+.credits ul{padding-left:20px;margin:4px 0}
+.card.credits .authors{text-align:center;font-size:20px;font-weight:700;color:var(--ink)}
+.credits details{margin-top:6px}
+.credits summary{cursor:pointer;font-size:15px;color:var(--muted)}
+.credits pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.35;background:rgba(127,127,127,.12);border-radius:10px;padding:10px;color:var(--ink)}
+.credits .close{display:block;margin:18px auto 0}
 .best{color:var(--text-on-bg);opacity:.85;margin-top:12px;font-size:16px;min-height:22px;text-align:center}
 
 /* ---------- jeu ---------- */
@@ -200,6 +213,69 @@ svg#map.panning{cursor:grabbing}
 
   <button class="go" id="start">Jouer !</button>
   <div class="best" id="best"></div>
+  <button class="linkbtn" id="openCredits">Crédits</button>
+</section>
+
+<section id="credits" class="screen" aria-labelledby="creditsTitle">
+  <div class="card credits">
+    <h2 id="creditsTitle">Crédits</h2>
+    <p class="authors">Un jeu créé par<br>Christine Macé et François Emeric Verstraete</p>
+    <p class="authors" style="font-size:15px;font-weight:500">© 2026 Christine Macé et François Emeric Verstraete. Tous droits réservés.</p>
+
+    <h3>Cartes et données</h3>
+    <ul>
+      <li>Carte de l'Europe : Natural Earth (domaine public), via le projet world-atlas de Mike Bostock (licence ISC).</li>
+      <li>Contours des départements : Source IGN, Admin Express, sous licence ouverte. Noms et codes : INSEE. Mise en forme GeoJSON : projet france-geojson de Grégoire David.</li>
+      <li>Système solaire : schéma dessiné pour le jeu. Les distances et les tailles ne sont pas à l'échelle.</li>
+    </ul>
+
+    <h3>Drapeaux</h3>
+    <p>Drapeaux issus du projet flag-icons, sous licence MIT.</p>
+    <details><summary>Lire la licence MIT (flag-icons)</summary><pre>The MIT License (MIT)
+
+Copyright (c) 2013 Panayiotis Lipiridis
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the &quot;Software&quot;), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre></details>
+
+    <h3>Police de caractères</h3>
+    <p>Baloo 2, par Ek Type, sous licence SIL Open Font License 1.1, fournie par Google Fonts.</p>
+
+    <h3>Licence world-atlas</h3>
+    <details><summary>Lire la licence ISC (world-atlas)</summary><pre>Copyright 2013-2019 Michael Bostock
+
+Permission to use, copy, modify, and/or distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright notice
+and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot; AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+THIS SOFTWARE.</pre></details>
+
+    <h3>Vie privée</h3>
+    <p>Le jeu ne collecte aucune donnée personnelle. Les meilleurs scores sont enregistrés uniquement sur l'appareil utilisé.</p>
+
+    <button class="go close" id="closeCredits">Retour au jeu</button>
+  </div>
 </section>
 
 <section id="game" class="screen">
@@ -774,6 +850,8 @@ function finish(){
 }
 
 document.getElementById("start").onclick = startGame;
+document.getElementById("openCredits").onclick = () => { show("credits"); document.getElementById("credits").scrollTop = 0; };
+document.getElementById("closeCredits").onclick = () => show("menu");
 document.getElementById("again").onclick = startGame;
 document.getElementById("toMenu").onclick = () => { show("menu"); showBest(); };
 document.getElementById("back").onclick = () => { hideFlag(); show("menu"); showBest(); };
