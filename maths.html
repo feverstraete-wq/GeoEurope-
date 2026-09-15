@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Christine Macé et François Emeric Verstraete">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mission Europe – maths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#2B3A8C; --bg2:#22306F; --ink:#1D2350; --paper:#FFFFFF; --muted:#5A5F86; --line:#D5D8EE;
+  --good:#2FA65A; --bad:#E0453A; --hint:#FF9F1C; --sun:#FFD23F; --sun-d:#C99A00; --coral:#FF8A5B;
+  --key:#EEF0FA; --shadow:0 4px 0 rgba(0,0,0,.25);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A3D; --bg2:#0E1330; --ink:#EEF0FF; --paper:#232A57; --muted:#B5BAE0; --line:#3B4270; --key:#2E3669;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A3D; --bg2:#0E1330; --ink:#EEF0FF; --paper:#232A57; --muted:#B5BAE0; --line:#3B4270; --key:#2E3669;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Baloo 2",ui-rounded,"Segoe UI Rounded","Trebuchet MS",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.screen{display:none;min-height:100vh;min-height:100dvh}
+.screen.on{display:flex}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* accueil */
+#menu{flex-direction:column;align-items:center;padding:24px 16px 32px;
+  background:radial-gradient(circle at 20% 10%, #3D4FB0 0, transparent 45%), var(--bg)}
+.logo{color:#fff;text-align:center;margin:8px 0 18px}
+.logo h1{font-size:clamp(40px,9vw,68px);line-height:.95;margin:0;font-weight:800;letter-spacing:-.5px;text-shadow:0 5px 0 var(--coral)}
+.logo .sub{display:inline-block;margin-top:10px;background:var(--sun);color:#1D2350;font-weight:800;font-size:22px;padding:2px 18px;border-radius:999px;box-shadow:0 4px 0 var(--sun-d)}
+.logo p{margin:12px 0 0;font-size:19px;opacity:.9}
+.panel{background:var(--paper);border-radius:22px;padding:18px 18px 20px;width:min(560px,100%);box-shadow:var(--shadow);margin-bottom:16px}
+.panel h2{margin:0 0 10px;font-size:22px}
+.choices{display:grid;gap:10px;grid-template-columns:repeat(3,1fr)}
+.choices.four{grid-template-columns:repeat(2,1fr)}
+.choice{background:transparent;border:3px solid var(--line);border-radius:16px;padding:10px 8px;text-align:center;line-height:1.15}
+.choice b{display:block;font-size:20px}
+.choice span{font-size:14px;color:var(--muted)}
+.choice .ico{font-size:28px;display:block}
+@media (max-width:420px){.choice{padding:10px 4px}.choice b{font-size:18px}}
+.choice[aria-pressed="true"]{border-color:var(--coral);background:rgba(255,138,91,.14)}
+.go{background:var(--sun);color:#1D2350;font-size:28px;font-weight:800;padding:12px 44px;border-radius:999px;box-shadow:0 6px 0 var(--sun-d);margin-top:4px}
+.go:active{transform:translateY(4px);box-shadow:0 2px 0 var(--sun-d)}
+.best{color:#fff;opacity:.85;margin-top:12px;font-size:16px;min-height:22px;text-align:center}
+
+/* jeu */
+#game{flex-direction:column;align-items:stretch}
+.top{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg2);color:#fff}
+.iconbtn{background:rgba(255,255,255,.14);color:#fff;border-radius:12px;height:42px;min-width:42px;padding:0 10px;font-size:18px;font-weight:700}
+.where{flex:1;line-height:1.15;min-width:0}
+.where small{display:block;font-size:14px;opacity:.8}
+.where strong{font-size:22px}
+.pts{text-align:right;font-size:14px;line-height:1.1}
+.pts b{display:block;font-size:22px}
+
+/* la ligne de train : l'élément signature */
+.route{position:relative;padding:18px 22px 10px;background:var(--bg2)}
+.track{position:relative;height:18px}
+.track::before{content:"";position:absolute;left:0;right:0;top:7px;height:4px;border-radius:4px;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 10px,transparent 10px 16px)}
+.stop{position:absolute;top:0;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--bg2);border:3px solid rgba(255,255,255,.45);transition:background .3s,border-color .3s,transform .3s}
+.stop.ok{background:var(--good);border-color:#fff}
+.stop.miss{background:var(--hint);border-color:#fff}
+.stop.here{border-color:var(--sun);transform:scale(1.35)}
+.train{position:absolute;top:-22px;font-size:22px;margin-left:-13px;transition:left .6s ease;filter:drop-shadow(0 2px 0 rgba(0,0,0,.3))}
+@media (prefers-reduced-motion: no-preference){ .train.hop{animation:hop .6s ease} }
+@keyframes hop{40%{transform:translateY(-6px)}}
+
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;padding:16px 14px 24px;gap:14px}
+.card{background:var(--paper);border-radius:22px;padding:16px 18px 18px;width:min(560px,100%);box-shadow:var(--shadow)}
+.tag{display:inline-block;font-size:14px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.q{font-size:clamp(22px,5.4vw,28px);line-height:1.3;font-weight:600;margin:0}
+.q .big{font-size:1.25em;font-weight:800;white-space:nowrap}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-size:.85em;margin:0 2px}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 3px 1px}
+.fr>span:last-child{padding:1px 3px 0}
+.answer{display:flex;align-items:center;gap:8px;margin-top:14px}
+.field{flex:1;min-height:56px;border:3px solid var(--line);border-radius:16px;font-size:30px;font-weight:800;padding:2px 14px;display:flex;align-items:center;letter-spacing:.5px}
+.field.empty::before{content:"Ta réponse";color:var(--muted);font-weight:500;font-size:20px}
+.field.wrong{border-color:var(--bad)}
+.field.right{border-color:var(--good)}
+.unit{font-size:22px;font-weight:700;color:var(--muted)}
+.qcm{display:grid;gap:10px;margin-top:14px}
+.qcm button{border:3px solid var(--line);border-radius:16px;padding:10px 12px;font-size:22px;font-weight:700;background:transparent;text-align:center}
+.qcm button.wrong{border-color:var(--bad);opacity:.6}
+.qcm button.right{border-color:var(--good);background:rgba(47,166,90,.14)}
+.feedback{margin-top:12px;font-size:18px;line-height:1.35;min-height:0}
+.feedback b{font-size:20px}
+.feedback.good b{color:var(--good)}
+.feedback.bad b{color:var(--bad)}
+.feedback.try b{color:var(--hint)}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(560px,100%)}
+.pad button{background:var(--key);border-radius:14px;height:58px;font-size:28px;font-weight:800;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.pad button:active{transform:translateY(3px);box-shadow:none}
+.pad .ok{background:var(--sun);color:#1D2350;grid-row:span 2;height:auto;box-shadow:0 4px 0 var(--sun-d)}
+.pad .wide{grid-column:span 2}
+.next{display:none;font-size:24px;white-space:nowrap;padding:10px 32px}
+.next.on{display:inline-block}
+
+/* fin */
+#end{flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;text-align:center}
+#end .card{text-align:center}
+.stars{font-size:54px;letter-spacing:6px;margin:6px 0}
+.stars .off{opacity:.2}
+#end h2{font-size:32px;margin:0}
+#end p{font-size:19px;margin:6px 0}
+.recap{text-align:left;margin:14px 0 4px;font-size:16px;line-height:1.4}
+.recap li{margin:4px 0}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.ghost{display:inline-block;margin-top:10px;background:transparent;color:#fff;text-decoration:underline;font-size:18px;padding:6px 12px}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen on">
+  <div class="logo">
+    <h1>Mission Europe</h1>
+    <span class="sub">Maths</span>
+    <p>Traverse l'Europe en train : chaque bonne réponse te mène à la capitale suivante.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Ton niveau</h2>
+    <div class="choices" id="levels">
+      <button class="choice" data-level="cm1" aria-pressed="true"><span class="ico">🌱</span><b>Débutant</b><span>CM1</span></button>
+      <button class="choice" data-level="cm2" aria-pressed="false"><span class="ico">🚲</span><b>Moyen</b><span>CM2</span></button>
+      <button class="choice" data-level="6e" aria-pressed="false"><span class="ico">🚀</span><b>Avancé</b><span>6e</span></button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Ton entraînement</h2>
+    <div class="choices four" id="themes">
+      <button class="choice" data-theme="calc" aria-pressed="false"><span class="ico">⚡</span><b>Calcul mental</b><span>Tables et astuces</span></button>
+      <button class="choice" data-theme="nombres" aria-pressed="false"><span class="ico">🍕</span><b>Nombres</b><span>Fractions et décimaux</span></button>
+      <button class="choice" data-theme="pb" aria-pressed="false"><span class="ico">🧳</span><b>Problèmes</b><span>Voyage, durées, prix</span></button>
+      <button class="choice" data-theme="mix" aria-pressed="true"><span class="ico">🎲</span><b>Un peu de tout</b><span>Les trois mélangés</span></button>
+    </div>
+  </div>
+
+  <button class="go" id="start">Partir !</button>
+  <div class="best" id="best"></div>
+  <a class="ghost" href="index.html">Retour aux cartes</a>
+</section>
+
+<section id="game" class="screen">
+  <div class="top">
+    <button class="iconbtn" id="quit" aria-label="Retour à l'accueil">✕</button>
+    <div class="where"><small id="stepLbl">Escale 1 sur 10</small><strong id="city">Lisbonne</strong></div>
+    <div class="pts"><b id="score">0</b>points</div>
+  </div>
+  <div class="route"><div class="track" id="track"><span class="train" id="train" aria-hidden="true">🚆</span></div></div>
+
+  <div class="stage">
+    <div class="card" aria-live="polite">
+      <span class="tag" id="tag"></span>
+      <p class="q" id="q"></p>
+      <div class="answer" id="answerRow"><div class="field empty" id="field"></div><span class="unit" id="unit"></span></div>
+      <div class="qcm" id="qcm" hidden></div>
+      <div class="feedback" id="fb"></div>
+      <div class="row"><button class="go next" id="next">Escale suivante</button></div>
+    </div>
+    <div class="pad" id="pad">
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Effacer">⌫</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button class="ok" data-k="ok">OK</button>
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="0" class="wide">0</button><button data-k=",">,</button><button data-k="/" aria-label="Barre de fraction">/</button>
+    </div>
+  </div>
+</section>
+
+<section id="end" class="screen">
+  <div class="card">
+    <div class="stars" id="stars"></div>
+    <h2 id="endTitle"></h2>
+    <p id="endText"></p>
+    <ul class="recap" id="recap"></ul>
+    <div class="row"><button class="go" id="again">Rejouer</button></div>
+  </div>
+  <button class="ghost" id="home">Changer de niveau</button>
+</section>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const CITIES=["Lisbonne","Madrid","Paris","Bruxelles","Amsterdam","Berlin","Prague","Vienne","Rome","Athènes"];
+const N=CITIES.length;
+
+/* ---------- outils ---------- */
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const clean=x=>Math.round(x*1e6)/1e6;
+const fmt=x=>{x=clean(x);const s=String(Math.abs(x)).split(".");const int=s[0].replace(/\B(?=(\d{3})+(?!\d))/g,"\u202F");return (x<0?"−":"")+int+(s[1]?","+s[1]:"");};
+const F=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const B=s=>`<span class="big">${s}</span>`;
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const nb=n=>`<b>${fmt(n)}</b>`;
+const hm=m=>{const h=Math.floor(m/60),r=m%60;return h+" h "+(r<10?"0":"")+r;};
+/* q: question, a: réponse numérique, u: unité, x: explication, c: choix (QCM), t: thème */
+const Q=(t,q,a,x,u="")=>({t,q,a,x,u});
+const C=(t,q,choices,good,x)=>({t,q,c:choices,good,x});
+
+/* ---------- CM1 ---------- */
+const CM1={
+calc:[
+ ()=>{const n=rnd(120,980),k=pick([9,19,29,39,8,18,28,38]),plus=Math.random()<.5,r=k%10===9?1:2,up=k+r;
+  return Q("Calcul mental",`${B(`${fmt(n)} ${plus?"+":"−"} ${k}`)} = ?`,plus?n+k:n-k,
+   `${plus?"Ajouter":"Retirer"} ${k}, c'est ${plus?"ajouter":"retirer"} ${up} puis ${plus?"retirer":"ajouter"} ${r}. Réponse : ${nb(plus?n+k:n-k)}.`);},
+ ()=>{const a=rnd(6,9),b=rnd(3,9);return Q("Tables",`${B(`${a} × ${b}`)} = ?`,a*b,`${a} × ${b} = ${nb(a*b)}. Récite la table de ${a} si tu hésites.`);},
+ ()=>{const n=rnd(12,999),m=pick([10,100,1000]);return Q("Calcul mental",`${B(`${fmt(n)} × ${fmt(m)}`)} = ?`,n*m,`Multiplier par ${fmt(m)}, c'est rendre chaque chiffre ${fmt(m)} fois plus grand : ${nb(n*m)}.`);},
+ ()=>{const n=rnd(12,60),m=pick([4,8]);return Q("Calcul mental",`${B(`${n} × ${m}`)} = ?`,n*m,`× ${m}, c'est doubler ${m===4?"deux":"trois"} fois : ${m===4?`${n} → ${2*n} → ${4*n}`:`${n} → ${2*n} → ${4*n} → ${8*n}`}.`);},
+ ()=>{const n=rnd(6,49)*2;return Q("Calcul mental",`${B(`${n} × 5`)} = ?`,n*5,`× 5, c'est × 10 puis la moitié : ${n*10} puis ${nb(n*5)}.`);},
+ ()=>{if(Math.random()<.5){const d=rnd(11,999)/100;return Q("Décimaux",`${B(`${fmt(d)} × 10`)} = ?`,d*10,`Chaque chiffre devient 10 fois plus grand : ${nb(d*10)}.`);}
+  const d=rnd(11,999)/10;return Q("Décimaux",`${B(`${fmt(d)} ÷ 10`)} = ?`,d/10,`Chaque chiffre devient 10 fois plus petit : ${nb(d/10)}.`);},
+ ()=>{const a=rnd(3,9),b=rnd(11,19);return Q("Calcul mental",`${B(`${a} × ${b}`)} = ?`,a*b,`${a} × ${b} = ${a} × 10 + ${a} × ${b-10} = ${a*10} + ${a*(b-10)} = ${nb(a*b)}.`);},
+ ()=>{const a=rnd(2,9),m=pick([10,100]),b=rnd(2,9)*m;return Q("Calcul mental",`${B(`${a} × ${fmt(b)}`)} = ?`,a*b,`${a} × ${b/m} = ${a*b/m}, puis × ${m} : ${nb(a*b)}.`);}
+],
+nombres:[
+ ()=>{const d=pick([2,3,4,5,10]),m=d*rnd(2,12),nm={2:"La moitié",3:"Un tiers",4:"Un quart",5:"Un cinquième",10:"Un dixième"}[d];
+  return Q("Fractions",`${nm} de ${m} cartes postales, c'est combien de cartes ?`,m/d,`On partage ${m} en ${d} parts égales : ${m} ÷ ${d} = ${nb(m/d)}.`,"cartes");},
+ ()=>{const d=rnd(3,10),k=rnd(1,3),r=rnd(1,d-1);return Q("Fractions",`${B(F(k*d+r,d))} = ${k} + ${F("?",d)}<br>Quel est le nombre caché ?`,r,`${k} = ${F(k*d,d)}, et ${k*d} + ${nb(r)} = ${k*d+r}.`);},
+ ()=>{const d=rnd(3,10),k=rnd(1,4),r=rnd(1,d-1);return Q("Fractions",`${k} + ${F(r,d)} = ${F("?",d)}<br>Quel est le nombre caché ?`,k*d+r,`${k} = ${F(k*d,d)}, donc ${k} + ${F(r,d)} = ${F(k*d+r,d)}. Réponse : ${nb(k*d+r)}.`);},
+ ()=>{const e=rnd(2,99),a=rnd(1,9),b=rnd(1,9),v=e+a/10+b/100;return Q("Décimaux",`Écris ce nombre avec une virgule :<br>${B(`${e} + ${F(a,10)} + ${F(b,100)}`)}`,v,`${a} dixièmes et ${b} centièmes : ${nb(v)}.`);},
+ ()=>{const e=rnd(1,20),a=rnd(2,8),b=rnd(10,a*10-1);const x=e+a/10,y=e+b/100;const good=x>y?0:1;
+  return C("Décimaux","Quel nombre est le plus grand ?",[fmt(x),fmt(y)],good,`On compare les dixièmes : ${a} dixièmes contre ${Math.floor(b/10)}. ${fmt(Math.max(x,y))} est le plus grand, même s'il a moins de chiffres.`);},
+ ()=>{const v=rnd(101,9999)/100;return Q("Décimaux",`Quel est l'arrondi à l'entier de ${B(fmt(v))} ?`,Math.round(v),`${fmt(v)} est entre ${Math.floor(v)} et ${Math.floor(v)+1}, plus proche de ${nb(Math.round(v))}.`);},
+ ()=>{const d=rnd(4,12),a=rnd(1,d-2),b=rnd(1,d-a-1);return Q("Fractions",`${B(`${F(a,d)} + ${F(b,d)}`)} = ${F("?",d)}`,a+b,`On ajoute les ${d==4?"quarts":"parts"} : ${a} + ${b} = ${nb(a+b)}, soit ${F(a+b,d)}.`);},
+ ()=>{const m=pick([2,5,10]);const good=m*rnd(11,99);const bad=shuffle([good+1,good+3,good+(m===2?1:2)*1+(m===10?4:0)].filter((v,i,s)=>v%m!==0&&s.indexOf(v)===i)).slice(0,2);
+  const ch=shuffle([good,...bad]);return C("Nombres",`Lequel est un multiple de ${m} ?`,ch.map(fmt),ch.indexOf(good),
+  {2:"Un multiple de 2 se termine par 0, 2, 4, 6 ou 8.",5:"Un multiple de 5 se termine par 0 ou 5.",10:"Un multiple de 10 se termine par 0."}[m]+` Réponse : ${nb(good)}.`);}
+],
+pb:[
+ ()=>{const s=rnd(40,90),a=rnd(5,19),b=rnd(5,15);return Q("Problème",`À Lisbonne, Léa a ${s} €. Elle achète un livre à ${a} € et un aimant à ${b} €. Combien lui reste-t-il ?`,s-a-b,`Elle dépense ${a} + ${b} = ${a+b} €. Il reste ${s} − ${a+b} = ${nb(s-a-b)} €.`,"€");},
+ ()=>{const a=rnd(150,480),b=rnd(35,190);return Q("Problème",`Le train pour Madrid parcourt ${a} km. Celui pour Paris parcourt ${b} km de plus. Quelle distance parcourt le train pour Paris ?`,a+b,`« De plus » : ${a} + ${b} = ${nb(a+b)} km.`,"km");},
+ ()=>{const p=rnd(4,9),n=rnd(4,9);return Q("Problème",`À Bruxelles, une entrée au musée coûte ${p} €. Combien paient ${n} enfants ?`,p*n,`${n} fois ${p} € : ${n} × ${p} = ${nb(p*n)} €.`,"€");},
+ ()=>{const q=pick([2,3,4,5]),k=pick([2,3,4]),p=rnd(3,9);return Q("Proportionnalité",`${q} gaufres coûtent ${p} €. Combien coûtent ${q*k} gaufres ?`,p*k,`${q*k} gaufres, c'est ${k} fois plus que ${q}. Donc on paie ${k} fois plus : ${k} × ${p} = ${nb(p*k)} €.`,"€");},
+ ()=>{const h=rnd(8,15),m=rnd(0,5)*5+10,d=rnd(40,110);const s=h*60+m,e=s+d;return Q("Durées",`Le train part d'Amsterdam à ${hm(s)} et arrive à Berlin à ${hm(e)}. Combien de minutes dure le trajet ?`,d,`De ${hm(s)} à ${hm(e)}, il s'écoule ${d>=60?`1 h et ${d-60} min, soit `:""}${nb(d)} minutes.`,"min");},
+ ()=>{const b=rnd(3,8),c=rnd(3,9),r=rnd(10,40);return Q("Égalité à trous",`${B(`${b*c+r} − … = ${b} × ${c}`)}<br>Quel nombre remplace les points ?`,r,`${b} × ${c} = ${b*c}. Il faut ${b*c+r} − ${nb(r)} = ${b*c}.`);},
+ ()=>{const c=rnd(2,4),m=rnd(2,5),tot=2*c+m;return Q("Algèbre",`2 cartes postales et 1 aimant coûtent ${tot} €. L'aimant coûte ${m} €. Combien coûte une carte ?`,c,`Les 2 cartes coûtent ${tot} − ${m} = ${2*c} €, donc une carte coûte ${nb(c)} €.`,"€");},
+ ()=>{const n=rnd(2,15);return Q("Programme de calcul",`Choisis ${n}. Ajoute 2. Multiplie le résultat par 4. Quel nombre obtiens-tu ?`,(n+2)*4,`${n} + 2 = ${n+2}, puis ${n+2} × 4 = ${nb((n+2)*4)}.`);},
+ ()=>{const e=pick([["obtenir 7","impossible"],["obtenir un nombre pair","une chance sur deux"],["obtenir un nombre plus petit que 7","certain"],["obtenir un 2","peu probable"]]);
+  const ch=["impossible","peu probable","une chance sur deux","certain"];
+  return C("Probabilités",`On lance un dé à six faces. Pour ${e[0]}, c'est…`,ch,ch.indexOf(e[1]),`Les faces vont de 1 à 6 : ${e[0]}, c'est <b>${e[1]}</b>.`);},
+ ()=>{const v=rnd(12,95)/10;return Q("Mesures",`Un bus mesure ${fmt(v)} m. Combien de centimètres cela fait-il ?`,v*100,`1 m = 100 cm, donc ${fmt(v)} m = ${nb(v*100)} cm.`,"cm");}
+]};
+
+/* ---------- CM2 ---------- */
+const CM2={
+calc:[
+ ()=>{const n=rnd(300,9800),k=rnd(1,9)*10+pick([8,9]),plus=Math.random()<.5,r=k%10===9?1:2;
+  return Q("Calcul mental",`${B(`${fmt(n)} ${plus?"+":"−"} ${k}`)} = ?`,plus?n+k:n-k,`${plus?"+":"−"} ${k}, c'est ${plus?"+":"−"} ${k+r} puis ${plus?"−":"+"} ${r} : ${nb(plus?n+k:n-k)}.`);},
+ ()=>{const d=rnd(11,999)/pick([10,100]),m=pick([10,100,1000]),mul=Math.random()<.5;const v=mul?d*m:d/m;
+  if(!mul&&String(clean(v)).split(".")[1]?.length>3)return CM2.calc[1]();
+  return Q("Décimaux",`${B(`${fmt(d)} ${mul?"×":"÷"} ${fmt(m)}`)} = ?`,v,`Chaque chiffre devient ${fmt(m)} fois plus ${mul?"grand":"petit"} : ${nb(v)}.`);},
+ ()=>{const n=pick([1,3,5,7,9,11,13,15]);return Q("Faits numériques",`Quelle est la moitié de ${B(n)} ?`,n/2,`${n-1} = 2 × ${(n-1)/2}, donc la moitié de ${n} est ${nb(n/2)}.`);},
+ ()=>{if(Math.random()<.5){const d=rnd(11,49)/10;return Q("Calcul mental",`Quel est le double de ${B(fmt(d))} ?`,d*2,`Double de ${Math.floor(d)} et double de ${fmt(clean(d-Math.floor(d)))} : ${nb(d*2)}.`);}
+  const d=rnd(3,49)*2/10;return Q("Calcul mental",`Quelle est la moitié de ${B(fmt(d))} ?`,d/2,`${fmt(d)} ÷ 2 = ${nb(d/2)}.`);},
+ ()=>{const m=pick([4,8]),n=m*rnd(6,30);return Q("Calcul mental",`${B(`${n} ÷ ${m}`)} = ?`,n/m,`÷ ${m}, c'est prendre la moitié ${m===4?"deux":"trois"} fois : ${nb(n/m)}.`);},
+ ()=>{if(Math.random()<.5){const d=rnd(11,99)/10;return Q("Calcul mental",`${B(`${fmt(d)} × 5`)} = ?`,d*5,`× 5, c'est × 10 puis la moitié : ${fmt(d*10)} puis ${nb(d*5)}.`);}
+  const d=rnd(2,40)/10;return Q("Calcul mental",`${B(`${fmt(d)} × 50`)} = ?`,d*50,`× 50, c'est × 100 puis la moitié : ${fmt(d*100)} puis ${nb(d*50)}.`);},
+ ()=>{const a=rnd(2,9),b=rnd(2,9),ma=pick([10,100,1000]),mb=pick([10,100]);return Q("Calcul mental",`${B(`${fmt(a*ma)} × ${fmt(b*mb)}`)} = ?`,a*ma*b*mb,`${a} × ${b} = ${a*b}, puis on ajoute les zéros : ${nb(a*ma*b*mb)}.`);},
+ ()=>{const a=rnd(11,69)/10,b=rnd(11,39)/10;return Q("Calcul mental",`${B(`${fmt(a)} + ${fmt(b)}`)} = ?`,a+b,`Unités ensemble, dixièmes ensemble : ${nb(a+b)}.`);}
+],
+nombres:[
+ ()=>{const d=pick([3,4,5]),n=rnd(2,d-1),m=d*rnd(3,15);return Q("Fractions",`Combien valent ${F(n,d)} de ${m} € ?`,m*n/d,`${F(1,d)} de ${m} €, c'est ${m/d} €. Donc ${F(n,d)}, c'est ${n} × ${m/d} = ${nb(m*n/d)} €.`,"€");},
+ ()=>{const k=rnd(2,6),d=rnd(3,9),n=rnd(1,d-1);return Q("Fractions",`${B(`${k} × ${F(n,d)}`)} = ${F("?",d)}`,k*n,`${k} fois ${n} ${d===4?"quarts":"parts"}, c'est ${nb(k*n)} parts : ${F(k*n,d)}.`);},
+ ()=>{const d=pick([2,3,4,5]),k=pick([2,3,4]),D=d*k;const n1=rnd(1,d-1),n2=n1*k+pick([-1,1]);if(n2<=0||n2>=D)return CM2.nombres[2]();
+  const good=n1*k>n2?0:1;return C("Fractions","Quelle fraction est la plus grande ?",[F(n1,d),F(n2,D)],good,`${F(n1,d)} = ${F(n1*k,D)}. On compare ${n1*k} et ${n2} ${D}ᵉˢ.`);},
+ ()=>{const e=rnd(1,30),a=rnd(1,9),c=rnd(1,9),v=e+a/10+c/1000;return Q("Décimaux",`Écris ce nombre avec une virgule :<br>${B(`${e} + ${F(a,10)} + ${F(c,1000)}`)}`,v,`Pas de centièmes : on écrit 0 au rang des centièmes. ${nb(v)}.`);},
+ ()=>{const n=pick([12,16,18,20,24,28,30]);let c=0;const L=[];for(let i=1;i<=n;i++)if(n%i===0){c++;L.push(i);}
+  return Q("Diviseurs",`Combien le nombre ${B(n)} a-t-il de diviseurs ?`,c,`Les diviseurs de ${n} : ${L.join(", ")}. Il y en a ${nb(c)}.`);},
+ ()=>{const [a,b]=pick([[4,6],[6,8],[4,10],[6,9],[3,4],[2,7],[8,12],[6,10]]);const l=a*b/gcd(a,b);
+  return Q("Multiples",`Quel est le plus petit multiple commun à ${a} et ${b} (autre que 0) ?`,l,`Multiples de ${b} : ${b}, ${2*b}, ${3*b}… Le premier qui est aussi dans la table de ${a} est ${nb(l)}.`);},
+ ()=>{const d=rnd(3,12),k=rnd(1,5),r=rnd(1,d-1);return Q("Fractions",`${B(F(k*d+r,d))} = ? + ${F(r,d)}<br>Quel est le nombre entier caché ?`,k,`${F(k*d,d)} = ${k}, donc ${F(k*d+r,d)} = ${nb(k)} + ${F(r,d)}.`);},
+ ()=>{const v=rnd(1001,49999)/1000;return Q("Décimaux",`Quel est l'arrondi à l'entier de ${B(fmt(v))} ?`,Math.round(v),`On regarde le chiffre des dixièmes : ${Math.floor(v*10)%10}. Arrondi : ${nb(Math.round(v))}.`);}
+],
+pb:[
+ ()=>{const n=rnd(2,4),p=pick([1.5,2.5,3.5,1.2,2.4]),g=rnd(8,15),b=pick([20,50]);const r=b-n*p-g;if(r<=0)return CM2.pb[0]();
+  return Q("Problème",`À Paris, Tom achète ${n} cartes à ${fmt(p)} € chacune et un guide à ${g} €. Il paie avec un billet de ${b} €. Combien lui rend-on ?`,r,`Cartes : ${n} × ${fmt(p)} = ${fmt(n*p)} €. Total : ${fmt(n*p+g)} €. Monnaie : ${b} − ${fmt(n*p+g)} = ${nb(r)} €.`,"€");},
+ ()=>{const m=rnd(1,3),s=rnd(5,55);return Q("Durées",`Un coureur fait le tour du parc en ${m} min ${s} s. Combien de secondes cela fait-il ?`,m*60+s,`1 min = 60 s, donc ${m} min = ${m*60} s. ${m*60} + ${s} = ${nb(m*60+s)} s.`,"s");},
+ ()=>{const a=pick([2,3]),b=pick([4,5]),pa=pick([1.8,2.4,3,1.5]);return Q("Proportionnalité",`À Vienne, ${a} kg de pommes coûtent ${fmt(pa*a)} € et ${b} kg coûtent ${fmt(pa*b)} €. Combien coûtent ${a+b} kg ?`,pa*(a+b),`${a+b} kg = ${a} kg + ${b} kg, donc on additionne les prix : ${fmt(pa*a)} + ${fmt(pa*b)} = ${nb(pa*(a+b))} €.`,"€");},
+ ()=>{const r=rnd(2,6),bl=rnd(2,7),t=r+bl;return Q("Probabilités",`Un sac contient ${r} billes rouges et ${bl} billes bleues. On tire une bille au hasard. On a combien de chances sur ${t} de tirer une rouge ?`,r,`Il y a ${t} billes en tout, dont ${r} rouges : ${nb(r)} chances sur ${t}.`,`sur ${t}`);},
+ ()=>{const n=rnd(2,12);return Q("Programme de calcul",`Choisis ${n}. Ajoute 2. Multiplie par 4. Retire 3. Quel nombre obtiens-tu ?`,(n+2)*4-3,`${n} + 2 = ${n+2} ; ${n+2} × 4 = ${(n+2)*4} ; ${(n+2)*4} − 3 = ${nb((n+2)*4-3)}.`);},
+ ()=>{const L=rnd(5,15),l=rnd(3,L-1);return Q("Aires",`Un jardin rectangulaire à Prague mesure ${L} m de long et ${l} m de large. Quelle est son aire ?`,L*l,`Aire du rectangle : longueur × largeur = ${L} × ${l} = ${nb(L*l)} m².`,"m²");},
+ ()=>{const s=rnd(2,9);const t=[s];for(let i=0;i<4;i++)t.push(t[i]*2+1);return Q("Suites",`Trouve le nombre suivant :<br>${B(t.join(" ; ")+" ; ?")}`,t[4]*2+1,`À chaque fois, on double et on ajoute 1 : ${t[4]} × 2 + 1 = ${nb(t[4]*2+1)}.`);},
+ ()=>{const k=pick([["la moitié d'un angle droit",45],["deux angles droits",180],["le tiers d'un angle droit",30]]);return Q("Angles",`Combien de degrés mesure ${k[0]} ?`,k[1],`Un angle droit mesure 90°. Donc ${k[0]} mesure ${nb(k[1])}°.`,"°");}
+]};
+
+/* ---------- 6e ---------- */
+const S6={
+calc:[
+ ()=>{const a=rnd(2,9),b=rnd(2,9),da=pick([10,100]),db=10;const v=a*b/(da*db);return Q("Décimaux",`${B(`${fmt(a/da)} × ${fmt(b/db)}`)} = ?`,v,`${a} × ${b} = ${a*b}, puis on place la virgule : ${da===10?2:3} chiffres après la virgule. ${nb(v)}.`);},
+ ()=>{const d=rnd(12,999)/10,m=pick([0.1,0.01,0.001]);return Q("Décimaux",`${B(`${fmt(d)} × ${fmt(m)}`)} = ?`,d*m,`Multiplier par ${fmt(m)}, c'est diviser par ${fmt(1/m)} : ${nb(d*m)}.`);},
+ ()=>{const p=pick([10,25,50,75,20]),base=pick({10:[30,70,120,250],25:[40,80,120,200],50:[34,90,150,64],75:[40,80,120],20:[15,40,60,90]}[p]);
+  return Q("Pourcentages",`Combien font ${B(p+" %")} de ${base} ?`,base*p/100,`${p} % de ${base}, c'est ${F(p,100)} × ${base} = ${nb(base*p/100)}.`);},
+ ()=>{const f=pick([[1,4,.25],[1,2,.5],[3,4,.75],[3,2,1.5],[5,2,2.5],[1,5,.2],[1,10,.1]]);return Q("Fractions",`Écris ${B(F(f[0],f[1]))} avec une virgule.`,f[2],`${f[0]} ÷ ${f[1]} = ${nb(f[2])}.`);},
+ ()=>{const d=pick([2,4,5]),n=rnd(3,13);if(n%d===0)return S6.calc[4]();return Q("Fractions",`${B(`${F(1,d)} × ${n}`)} = ?<br><small>(nombre à virgule ou fraction)</small>`,n/d,`${F(1,d)} × ${n}, c'est ${n} ÷ ${d} = ${nb(n/d)}, ou ${F(n,d)}.`);},
+ ()=>{const b=rnd(11,40),q=rnd(8,40),r=rnd(0,b-1),a=b*q+r;return Q("Division",`Quel est le quotient de la division euclidienne de ${B(a)} par ${B(b)} ?`,q,`${b} × ${q} = ${b*q} et ${a} − ${b*q} = ${r} (plus petit que ${b}). Quotient : ${nb(q)}.`);},
+ ()=>{const k=pick([["m²","dm²",100],["dm²","cm²",100]]),v=rnd(2,95)/pick([1,10]);return Q("Aires",`${B(`${fmt(v)} ${k[0]}`)} = ? ${k[1]}`,v*k[2],`1 ${k[0]} = 100 ${k[1]}, donc ${fmt(v)} ${k[0]} = ${nb(v*100)} ${k[1]}.`,k[1]);}
+],
+nombres:[
+ ()=>{const v=rnd(10001,99999)/1000,p=pick([["au dixième",10],["au centième",100]]);const r=Math.round(v*p[1])/p[1];return Q("Arrondis",`Arrondis ${B(fmt(v))} ${p[0]}.`,r,`On regarde le chiffre juste après : l'arrondi ${p[0]} est ${nb(r)}.`);},
+ ()=>{const a=rnd(1,9),b=pick([2,4,5,8]);return Q("Quotients",`${B(`${b} × ? = ${a}`)}<br><small>(fraction ou nombre à virgule)</small>`,a/b,`Le nombre qui multiplié par ${b} donne ${a}, c'est le quotient ${F(a,b)} = ${nb(a/b)}.`);},
+ ()=>{const d=pick([2,3,4,5]),k=pick([2,3]),n1=rnd(1,d-1),n2=rnd(1,d*k-1);if(n1*k===n2)return S6.nombres[2]();
+  const ch=[F(n1,d),F(n2,d*k)];return C("Fractions","Quelle fraction est la plus grande ?",ch,n1*k>n2?0:1,`${F(n1,d)} = ${F(n1*k,d*k)}. On compare ${n1*k} et ${n2}.`);},
+ ()=>{const d=pick([2,3,4,5]),k=2,D=d*k,a=rnd(1,d-1),b=rnd(1,D-1-a*k);if(b<1)return S6.nombres[3]();return Q("Fractions",`${B(`${F(a,d)} + ${F(b,D)}`)} = ?<br><small>(tape une fraction avec /)</small>`,(a*k+b)/D,`${F(a,d)} = ${F(a*k,D)}, puis ${a*k} + ${b} = ${a*k+b} : ${F(a*k+b,D)}.`);},
+ ()=>{const k=pick([["millions dans un milliard",1000],["milliers dans un million",1000],["millions dans 5 milliards",5000]]);return Q("Grands nombres",`Combien y a-t-il de ${k[0]} ?`,k[1],`1 milliard = 1 000 millions. Réponse : ${nb(k[1])}.`);},
+ ()=>{const k=pick([["un as",4,32],["un cœur",8,32],["une carte rouge",16,32],["un pique",13,52]]);return Q("Probabilités",`On tire une carte au hasard dans un jeu de ${k[2]} cartes. Quelle est la probabilité de tirer ${k[0]} ?<br><small>(fraction ou nombre à virgule)</small>`,k[1]/k[2],`${k[1]} cartes favorables sur ${k[2]} : ${F(k[1],k[2])} = ${nb(k[1]/k[2])}.`);},
+ ()=>{const p=pick([10,20,25,50]),t=pick([20,40,80]);return Q("Pourcentages",`Dans une classe de ${t} élèves partis à Rome, ${t*p/100} ont déjà pris l'avion. Quel pourcentage cela représente-t-il ?`,p,`${t*p/100} sur ${t}, c'est ${F(t*p/100,t)} = ${F(p,100)}, soit ${nb(p)} %.`,"%");}
+],
+pb:[
+ ()=>{const d=rnd(2,20);const r=Math.random()<.5;const D=r?2*d:d;return Q("Périmètre du disque",`Une fontaine de Rome est un disque de ${r?"rayon":"diamètre"} ${d} m. Quel est son périmètre ? (prends 3,14 pour π)`,D*3.14,`${r?`Diamètre = 2 × ${d} = ${D} m. `:""}Périmètre = diamètre × π = ${D} × 3,14 = ${nb(D*3.14)} m.`,"m");},
+ ()=>{const a=rnd(30,80),b=rnd(20,150-a);return Q("Triangles",`Dans un triangle, deux angles mesurent ${a}° et ${b}°. Combien mesure le troisième ?`,180-a-b,`La somme des angles vaut 180° : 180 − ${a} − ${b} = ${nb(180-a-b)}°.`,"°");},
+ ()=>{const n=pick([4,5]),u=pick([1.5,2,2.5,1.2]),m=pick([3,7,6]);return Q("Proportionnalité",`À Athènes, ${n} cahiers coûtent ${fmt(n*u)} €. Combien coûtent ${m} cahiers ?`,m*u,`Retour à l'unité : 1 cahier coûte ${fmt(n*u)} ÷ ${n} = ${fmt(u)} €. Donc ${m} × ${fmt(u)} = ${nb(m*u)} €.`,"€");},
+ ()=>{if(Math.random()<.5){const h=pick([1.5,2.25,2.5,3.75,1.25]);return Q("Durées",`Un vol dure ${fmt(h)} h. Combien de minutes cela fait-il ?`,h*60,`1 h = 60 min, donc ${fmt(h)} h = ${fmt(h)} × 60 = ${nb(h*60)} min.`,"min");}
+  const m=pick([90,150,45,135,210]);return Q("Durées",`Un trajet dure ${m} min. Écris cette durée en heures (nombre à virgule).`,m/60,`${m} ÷ 60 = ${nb(m/60)} h.`,"h");},
+ ()=>{const p=pick([10,20,25,30,50]),x=pick([20,40,60,80]);return Q("Pourcentages",`Un maillot à ${x} € est soldé de ${p} %. De combien d'euros baisse son prix ?`,x*p/100,`${p} % de ${x} € = ${nb(x*p/100)} €.`,"€");},
+ ()=>{const k=pick([2,5,10,25]),c=rnd(2,12);return Q("Échelles",`Sur une carte d'Europe, 1 cm représente ${k} km. Deux villes sont à ${c} cm l'une de l'autre sur la carte. Quelle est la distance réelle ?`,k*c,`${c} fois plus de centimètres, donc ${c} fois plus de kilomètres : ${c} × ${k} = ${nb(k*c)} km.`,"km");},
+ ()=>{const a=rnd(2,6),b=rnd(2,5),c=rnd(2,4);return Q("Volumes",`On empile des cubes de 1 cm de côté pour faire un pavé de ${a} cm sur ${b} cm, haut de ${c} cm. Quel est son volume ?`,a*b*c,`${a} × ${b} = ${a*b} cubes par étage, sur ${c} étages : ${nb(a*b*c)} cm³.`,"cm³");},
+ ()=>{const n=pick([20,25,50]),k=rnd(Math.floor(n*.3),Math.floor(n*.7));return Q("Fréquences",`On lance une pièce ${n} fois. Pile sort ${k} fois. Quelle est la fréquence de pile, en pourcentage ?`,k*100/n,`${F(k,n)} = ${F(k*100/n,100)}, soit ${nb(k*100/n)} %. La probabilité théorique est 50 %.`,"%");}
+]};
+
+const BANK={cm1:CM1,cm2:CM2,"6e":S6};
+const THEMES=["calc","nombres","pb"];
+
+/* ---------- état ---------- */
+let level="cm1",theme="mix",list=[],i=0,score=0,tries=0,input="",done=false,results=[];
+
+function select(group,attr,val){[...$(group).children].forEach(b=>b.setAttribute("aria-pressed",String(b.dataset[attr]===val)));}
+$("levels").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;level=b.dataset.level;select("levels","level",level);showBest();});
+$("themes").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;theme=b.dataset.theme;select("themes","theme",theme);showBest();});
+
+const key=()=>"me-maths-"+level+"-"+theme;
+function showBest(){let v=null;try{v=localStorage.getItem(key());}catch(e){}
+  $("best").textContent=v?`Ton record ici : ${v} points sur ${N*2}`:"";}
+showBest();
+
+function build(){const bank=BANK[level];const seen=new Set();const out=[];let guard=0;
+  while(out.length<N&&guard++<400){const th=theme==="mix"?THEMES[out.length%3]:theme;
+    const q=pick(bank[th])();const sig=q.q+(q.c||"");if(seen.has(sig))continue;seen.add(sig);out.push(q);}
+  return theme==="mix"?shuffle(out):out;}
+
+function drawTrack(){const t=$("track");t.querySelectorAll(".stop").forEach(s=>s.remove());
+  for(let k=0;k<N;k++){const s=document.createElement("span");s.className="stop";s.style.left=(k/(N-1)*100)+"%";
+    if(results[k]!==undefined)s.classList.add(results[k]>0?"ok":"miss");if(k===i&&!done)s.classList.add("here");t.appendChild(s);}
+  const tr=$("train");tr.style.left=(i/(N-1)*100)+"%";tr.classList.remove("hop");void tr.offsetWidth;tr.classList.add("hop");}
+
+function start(){list=build();i=0;score=0;results=[];show("game");ask();}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));window.scrollTo(0,0);}
+
+function ask(){const q=list[i];tries=0;input="";done=false;
+  $("stepLbl").textContent=`Escale ${i+1} sur ${N}`;$("city").textContent=CITIES[i];$("score").textContent=score;
+  $("tag").textContent=q.t;$("q").innerHTML=q.q;$("fb").className="feedback";$("fb").innerHTML="";
+  $("next").classList.remove("on");$("next").textContent=i===N-1?"Voir mon arrivée":"Escale suivante";
+  const isQ=!!q.c;$("answerRow").hidden=isQ;$("pad").style.display=isQ?"none":"grid";$("qcm").hidden=!isQ;
+  if(isQ){$("qcm").innerHTML="";q.c.forEach((c,k)=>{const b=document.createElement("button");b.innerHTML=c;b.onclick=()=>choose(k,b);$("qcm").appendChild(b);});}
+  else{$("unit").textContent=q.u||"";paint();}
+  drawTrack();}
+
+function paint(){const f=$("field");f.textContent=input;f.classList.toggle("empty",!input);f.classList.remove("wrong","right");}
+
+function parse(s){s=s.replace(/\s/g,"").replace(/,/g,".");if(!s)return NaN;
+  if(s.includes("/")){const p=s.split("/");if(p.length!==2||!p[0]||!p[1])return NaN;const a=Number(p[0]),b=Number(p[1]);return b?a/b:NaN;}
+  if(!/^\d*\.?\d+$|^\d+\.$/.test(s))return NaN;return Number(s);}
+
+function finish(pts){done=true;results[i]=pts;score+=pts;$("score").textContent=score;
+  $("pad").style.display="none";$("next").classList.add("on");drawTrack();$("next").focus();}
+
+function submit(){if(done)return;const q=list[i];const v=parse(input);
+  if(isNaN(v)){$("fb").className="feedback try";$("fb").innerHTML="<b>Écris un nombre</b> avec les touches.";return;}
+  const ok=Math.abs(v-q.a)<1e-6;
+  if(ok){$("field").classList.add("right");$("fb").className="feedback good";$("fb").innerHTML=`<b>${tries?"Bien corrigé !":"Bravo !"}</b> ${q.x}`;finish(tries?1:2);}
+  else if(tries===0){tries=1;$("field").classList.add("wrong");$("fb").className="feedback try";$("fb").innerHTML="<b>Pas tout à fait.</b> Relis la question et essaie encore.";input="";setTimeout(paint,700);}
+  else{$("field").classList.add("wrong");$("fb").className="feedback bad";$("fb").innerHTML=`<b>La réponse était ${fmt(q.a)}${q.u&&!q.u.startsWith("sur")?" "+q.u:""}.</b> ${q.x}`;finish(0);}}
+
+function choose(k,btn){if(done)return;const q=list[i];
+  if(k===q.good){btn.classList.add("right");$("fb").className="feedback good";$("fb").innerHTML=`<b>${tries?"Bien corrigé !":"Bravo !"}</b> ${q.x}`;finish(tries?1:2);}
+  else if(tries===0){tries=1;btn.classList.add("wrong");btn.disabled=true;$("fb").className="feedback try";$("fb").innerHTML="<b>Pas tout à fait.</b> Essaie encore.";}
+  else{btn.classList.add("wrong");$("qcm").children[q.good].classList.add("right");$("fb").className="feedback bad";$("fb").innerHTML=`<b>Regarde la bonne réponse.</b> ${q.x}`;finish(0);}}
+
+function press(k){if(done){if(k==="ok")next();return;}
+  if(k==="ok")return submit();
+  if(k==="del"){input=input.slice(0,-1);}
+  else if(input.length<9){const last=input.split("/").pop();
+    if(k==="/"&&(input.includes("/")||!input||input.endsWith(",")))return;
+    if(k===","&&(last.includes(",")||!last))return;
+    input+=k;}
+  paint();}
+$("pad").addEventListener("click",e=>{const b=e.target.closest("button");if(b)press(b.dataset.k);});
+document.addEventListener("keydown",e=>{if(!$("game").classList.contains("on"))return;
+  const q=list[i];if(q&&q.c){if(done&&e.key==="Enter")next();else if(/^[1-4]$/.test(e.key)){const b=$("qcm").children[+e.key-1];if(b&&!b.disabled)choose(+e.key-1,b);}return;}
+  if(/^\d$/.test(e.key))press(e.key);else if(e.key===","||e.key===".")press(",");else if(e.key==="/")press("/");
+  else if(e.key==="Backspace")press("del");else if(e.key==="Enter"){e.preventDefault();press("ok");}});
+
+function next(){if(i<N-1){i++;ask();}else end();}
+$("next").onclick=next;
+
+function end(){const max=N*2,st=score>=max*.85?3:score>=max*.6?2:score>=max*.3?1:0;
+  $("stars").innerHTML=[0,1,2].map(k=>`<span class="${k<st?"":"off"}">⭐</span>`).join("");
+  $("endTitle").textContent=st===3?"Bienvenue à Athènes !":st===2?"Arrivée à Athènes !":"Terminus Athènes";
+  $("endText").textContent=`${score} points sur ${max}. `+(st===3?"Un voyage parfait.":st===2?"Beau voyage, encore un effort pour la 3ᵉ étoile.":"Rejoue pour gagner des étoiles.");
+  let best=0;try{best=+localStorage.getItem(key())||0;if(score>best)localStorage.setItem(key(),score);}catch(e){}
+  const miss=list.map((q,k)=>results[k]===0?`<li>${CITIES[k]} : ${q.t}</li>`:"").join("");
+  $("recap").innerHTML=miss?`<li style="list-style:none;margin-left:-20px"><b>À revoir :</b></li>${miss}`:"";
+  done=true;show("end");showBest();}
+
+$("start").onclick=start;$("again").onclick=start;
+$("home").onclick=()=>show("menu");$("quit").onclick=()=>show("menu");
+})();
+</script>
+</body>
+</html>

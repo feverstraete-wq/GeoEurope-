@@ -68,6 +68,11 @@ button:focus-visible{outline:3px solid #FFD23F;outline-offset:3px}
 .credits summary{cursor:pointer;font-size:15px;color:var(--muted)}
 .credits pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.35;background:rgba(127,127,127,.12);border-radius:10px;padding:10px;color:var(--ink)}
 .credits .close{display:block;margin:18px auto 0}
+.mathslink{display:flex;align-items:center;gap:12px;width:min(560px,100%);background:var(--paper);color:var(--ink);text-decoration:none;border-radius:22px;padding:14px 18px;box-shadow:var(--shadow);margin:18px 0 0}
+.mathslink .ico{font-size:34px}
+.mathslink b{display:block;font-size:22px;line-height:1.1}
+.mathslink small{display:block;font-size:15px;line-height:1.25;color:var(--muted)}
+.mathslink:focus-visible{outline:3px solid #FFD23F;outline-offset:3px}
 .best{color:var(--text-on-bg);opacity:.85;margin-top:12px;font-size:16px;min-height:22px;text-align:center}
 
 /* ---------- jeu ---------- */
@@ -213,6 +218,7 @@ svg#map.panning{cursor:grabbing}
 
   <button class="go" id="start">Jouer !</button>
   <div class="best" id="best"></div>
+  <a class="mathslink" href="maths.html"><span class="ico">🚆</span><span><b>Les maths</b><small>Traverse l'Europe en train en résolvant des calculs (CM1, CM2, 6e)</small></span></a>
   <button class="linkbtn" id="openCredits">Crédits</button>
 </section>
 

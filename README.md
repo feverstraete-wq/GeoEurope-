@@ -1,6 +1,6 @@
 # Mission Europe
 
-Jeu éducatif en HTML5 : placer les pays d'Europe et leurs capitales, les départements français, les planètes et les satellites du système solaire.
+Jeu éducatif en HTML5 : placer les pays d'Europe et leurs capitales, les départements français, les planètes et les satellites du système solaire, et s'entraîner en mathématiques.
 
 Créé par **Christine Macé** et **François Emeric Verstraete**.
 © 2026 Christine Macé et François Emeric Verstraete. Tous droits réservés.
@@ -8,6 +8,15 @@ Créé par **Christine Macé** et **François Emeric Verstraete**.
 ## Jouer
 
 Ouvrir `index.html` dans un navigateur. Le jeu fonctionne sur ordinateur, tablette et téléphone, sans installation.
+
+## Contenu
+
+- `index.html` : le jeu principal (Europe, Focus France, système solaire).
+- `maths.html` : le module « Les maths », accessible depuis l'accueil. L'élève traverse l'Europe en train, de Lisbonne à Athènes, en répondant à 10 questions. Trois niveaux alignés sur le programme de mathématiques du cycle 3 : Débutant (CM1), Moyen (CM2), Avancé (6e).
+
+## Publication avec GitHub Pages
+
+Dans le dépôt : **Settings**, puis **Pages**, puis **Deploy from a branch**, branche `main`, dossier `/ (root)`.
 
 ## Crédits
 
